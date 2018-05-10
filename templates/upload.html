@@ -1,0 +1,75 @@
+{{define "title"}}Dosa Diner{{end}}
+
+{{define "body"}}
+<section class="container">
+    <div class="columns">
+        <div class="column col-8 col-mr-auto">
+            <form class="form-group" id="upload-form" action="/upload" method="POST" encType="multipart/form-data">
+                <div class="form-group">
+                    <input class="form-input" placeholder="Your name (optional)" type="text" name="owner"/>
+                </div>
+                <div class="form-group">
+                    <input class="form-input" type="file" name="file" required="true "/>
+                </div>
+                <div class="form-group">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="private" name="private" onchange="updateDefaults()"></input>
+                        <i class="form-icon"></i>
+                        Unlisted / Private
+                    </label>
+                    |
+                    <label class="form-radio">
+                      <input type="radio" name="expire" id="day" value="day" onchange="updateDefaults()" checked>
+                      <i class="form-icon"></i> 1 Day
+                    </label>
+                    <label class="form-radio">
+                      <input type="radio" name="expire" id="month" value="month" onchange="updateDefaults()">
+                      <i class="form-icon"></i> 1 Month
+                    </label>
+                    <label class="form-radio">
+                      <input type="radio" name="expire" id="forever" value="forever" onchange="updateDefaults()">
+                      <i class="form-icon"></i> Forever
+                    </label>
+                </div>
+                <div class="input-group">
+                    <input class="btn btn-primary input-group-btn" type="submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{{end}}
+
+{{define "scripts"}}
+<script>
+// TODO: Use jquery
+function updateDefaults() {
+    var privEl = document.getElementById("private");
+    var dayEl = document.getElementById("day");
+    var monthEl = document.getElementById("month");
+    var foreverEl = document.getElementById("forever");
+    localStorage.setItem("private", privEl.checked);
+    localStorage.setItem("expire", dayEl.checked ? "day" : monthEl.checked ? "month" : foreverEl.checked ? "forever" : null); // sorry not sorry
+}
+function init() {
+    var privEl = document.getElementById("private")
+    var dayEl = document.getElementById("day")
+    var monthEl = document.getElementById("month")
+    var foreverEl = document.getElementById("forever")
+    var priv = localStorage.getItem("private");
+    var expire = localStorage.getItem("expire");
+    privEl.checked = priv == "true";
+    switch(expire) {
+        case "day":
+        dayEl.checked = true;
+        break;
+        case "month":
+        monthEl.checked = true;
+        break;
+        case "forever":
+        foreverEl.checked = true;
+    }
+}
+init();
+</script>
+{{end}}

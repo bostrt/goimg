@@ -1,0 +1,4 @@
+gopasteboard
+*.db
+tmp/
+

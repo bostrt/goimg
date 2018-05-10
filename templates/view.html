@@ -1,0 +1,91 @@
+{{define "title"}}View{{end}}
+
+{{define "body"}}
+<section class="container">
+    <div class="columns">
+        <div class="column">
+            <a href="/i/{{.UUID}}">
+                <img class="img-responsive m-1 bg-gray p-1 rounded" src="/i/{{.UUID}}"/>
+            </a>
+            <div class="mt-2">
+                <span id="added" class="label"></span>
+                {{if .Image.Expires}}
+                    <span id="expires" class="label"></span>
+                {{end}}
+                {{if .Image.Owner }}
+                    <span class="chip">{{.Image.Owner}}</span>
+                {{end}}
+                {{if .Owned }}
+                    <button id="modal-delete-button" class="btn btn-error float-right">Delete</button>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</section>
+<div class="modal" id="modal-delete">
+  <a id="modal-outside" class="modal-overlay" aria-label="Close"></a>
+  <div class="modal-container">
+    <div class="modal-header">
+      <a id="modal-close" class="btn btn-clear float-right" aria-label="Close"></a>
+      <div class="modal-title h5">Delete</div>
+    </div>
+    <div class="modal-body">
+      <div class="content">
+          Are you sure you want to delete this image?
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="modal-delete-confirm" class="btn btn-primary">Yes</a>
+      <button id="modal-cancel" class="btn">Cancel</button>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "scripts"}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/humanize-duration/3.14.0/humanize-duration.min.js"></script>
+<script>
+function modalClose() {
+    $("#modal-delete").removeClass("active");
+}
+
+function modalShow() {
+    $("#modal-delete").addClass("active");
+}
+
+$(document).ready(function() {
+    $("#modal-delete-button").click(modalShow);
+    $("#modal-outside").click(modalClose);
+    $("#modal-close").click(modalClose);
+    $("#modal-cancel").click(modalClose);
+    $(window).keydown(function(e) {
+        if (e.keyCode == 27) { // 27 is ESC key
+            modalClose();
+        }
+    });
+
+    $("#modal-delete-confirm").click(function() {
+        $.get("/d/{{.UUID}}/{{.Image.Delete}}", function() {
+            window.location.assign("/")
+        });
+    });
+
+    // Humanize the times
+    var now = new Date();
+    var added = new Date("{{.Image.Added}}");
+    var addedHuman = humanizeDuration(now - added, {largest: 1, round: true});
+    $("#added").text("Added " + addedHuman + " ago")
+
+    {{if .Image.Expires}}
+    var expires = new Date("{{.Image.Expires}}");
+    var seconds = expires - added;
+    if (seconds < 1) {
+        $("#expires").text("Expires soon");
+    } else {
+        var expiresHuman = humanizeDuration(expires - added, {largest: 2, round: true});
+        $("#expires").text("Expires in " + expiresHuman)
+    }
+    {{end}}
+});
+</script>
+{{end}}

@@ -1,0 +1,37 @@
+{{define "title"}}Recent{{end}}
+
+{{define "body"}}
+<section class="container">
+<!--<label class="form-switch">
+      <input type="checkbox" id="show-mine">
+      <i class="form-icon"></i> Only show my images
+    </label>-->
+    <div class="columns">
+        {{range $image := .Images}}
+            {{if $image}}
+                <a href="/view/{{$image}}" class="column col-3 col-xs-12 m-1 bg-gray p-1 rounded">
+                    <img class="img-responsive img-fit-contain" src="/i/{{$image}}?thumbnail=true"/>
+                <a>
+            {{end}}
+        {{end}}
+    </div>
+</section>
+{{end}}
+
+{{define "scripts"}}
+<!--<script>
+$(document).ready(function() {
+    if (window.location.search.indexOf("mine") > 0) {
+        $("#show-mine").attr("checked", true);
+    }
+    $("#show-mine").click(function(e) {
+        if (this.checked) {
+            window.location.assign("/recent?mine=true");
+        } else {
+            window.location.assign("/recent");
+        }
+        return false;
+    });
+});
+</script>-->
+{{end}}

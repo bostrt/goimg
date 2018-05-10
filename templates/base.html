@@ -1,0 +1,39 @@
+{{define "base"}}
+<!doctype html>
+<head>
+<html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/css/spectre-icons.min.css">
+    <link rel="stylesheet" href="/css/spectre.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <section class="container grid-lg mt-2">
+        <section class="container">
+            <div class="columns">
+                <div class="column">
+                    <header class="navbar">
+                      <section class="navbar-section">
+                        <a href="/" class="navbar-brand mr-2">Pasteboard</a>
+                        |
+                        <a href="/recent" class="btn btn-link">Recent</a>
+                        |
+                        <a href="/about" class="btn btn-link">About</a>
+                      </section>
+                    </header>
+                </div>
+            </div>
+        </section>
+        <div class="mt-2">
+        {{template "body" .}}
+        </div>
+    </section>
+</body>
+{{ template "scripts" . }}
+</html>
+{{end}}
+
+{{ define "scripts" }}{{ end }}
