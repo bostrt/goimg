@@ -1,3 +1,4 @@
+// Thanks https://github.com/prologic/wiki/blob/master/templates.go
 package main
 
 import (

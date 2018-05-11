@@ -1,8 +1,6 @@
 package main
 
 import (
-	// Standard
-
 	"context"
 	"encoding/binary"
 	"fmt"
@@ -98,38 +96,24 @@ func NewServer(imageDao *ImageDao, fs *FS, config Config) *Server {
 	server.templates.Add("notfound", notFoundTemplate)
 	server.templates.Add("recent", recentTemplate)
 
-	/*
-		err := server.templates.Load()
-		if err != nil {
-			log.Panicf("error loading templates: %s", err)
-		}
-	*/
 	server.initRoutes()
 
 	return server
 }
 
 func (s *Server) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	data := &Page{
-		Title: "Upload",
-	}
-	s.render("upload", w, data)
+	s.render("upload", w, nil)
 }
 
 func (s *Server) ViewRecent(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	data := &Page{
-		Title:  "Recent",
 		Images: s.imageDao.ListRecent(),
 	}
-
 	s.render("recent", w, data)
 }
 
 func (s *Server) About(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	data := &Page{
-		Title: "About",
-	}
-	s.render("about", w, data)
+	s.render("about", w, nil)
 }
 
 func (s *Server) NotFound(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {

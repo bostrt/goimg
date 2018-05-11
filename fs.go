@@ -12,15 +12,12 @@ import (
 	"github.com/disintegration/imaging"
 )
 
-const (
-	UPLOAD_PATH = "./tmp"
-)
-
 type FS struct {
+	cfg Config
 }
 
-func NewFS() *FS {
-	return &FS{}
+func NewFS(cfg Config) *FS {
+	return &FS{cfg: cfg}
 }
 
 // Save saves a file to disk using the provided id as a name.
@@ -41,7 +38,7 @@ func (fs *FS) Save(file io.Reader, id string) (string, string) {
 	}
 
 	// create file on disk
-	newPath := filepath.Join(UPLOAD_PATH, id)
+	newPath := filepath.Join(cfg.data, id)
 	newFile, err := os.Create(newPath)
 	if err != nil {
 		fmt.Println(err)
@@ -56,7 +53,7 @@ func (fs *FS) Save(file io.Reader, id string) (string, string) {
 	}
 
 	// create thumbnail file on disk
-	thumbPath := filepath.Join(UPLOAD_PATH, id+"_thumb."+fileType)
+	thumbPath := filepath.Join(cfg.data, id+"_thumb."+fileType)
 	fmt.Printf("FileType: %s, File: %s, Thumb: %s\n", fileType, newPath, thumbPath)
 	thumbFile, err := os.Create(thumbPath)
 	if err != nil {

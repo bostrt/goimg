@@ -14,11 +14,6 @@ const (
 	STOP
 )
 
-const (
-	GC_INTERVAL    = 5
-	GC_EXPIRE_LIMT = 100
-)
-
 var (
 	cmd = make(chan int)
 )
@@ -28,6 +23,7 @@ type GC struct {
 	dao *ImageDao
 	fs  *FS
 	wg  *sync.WaitGroup
+	cfg *Config
 }
 
 func NewGC(db *bolt.DB, dao *ImageDao, fs *FS, wg *sync.WaitGroup) *GC {
@@ -43,7 +39,7 @@ func (gc *GC) Start() {
 	//https://golang.org/pkg/time/#Ticker
 	gc.wg.Add(1)
 	fmt.Println("GC Started")
-	ticker := time.NewTicker(GC_INTERVAL * time.Second)
+	ticker := time.NewTicker(time.Duration(cfg.gcInterval) * time.Second)
 	for {
 		select {
 		case <-ticker.C:
@@ -105,7 +101,7 @@ func (gc *GC) doGCExpired(tx *bolt.Tx) {
 	now := time.Now().UTC().Format(time.RFC3339)
 	bucket := tx.Bucket(B(EXPIRATION_BUCKET))
 	c := bucket.Cursor()
-	for k, v := c.First(); k != nil && counter < GC_EXPIRE_LIMT && string(k) < now; k, v = c.Next() {
+	for k, v := c.First(); k != nil && counter < cfg.gcLimit && string(k) < now; k, v = c.Next() {
 		// Split string on comma
 		uuids := strings.Split(string(v), ",")
 		for _, uuid := range uuids {
