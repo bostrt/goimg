@@ -55,7 +55,6 @@ func (dao *ImageDao) Save(image *Image) error {
 			bucket.Put(B(image.Expires), today)
 		}
 
-		//bucket, err = tx.CreateBucketb([]byte(image.UUID))
 		bucket = tx.Bucket(B(IMAGE_BUCKET))
 		bucket.Put(B(image.UUID+":path"), B(image.path))
 		bucket.Put(B(image.UUID+":thumbpath"), B(image.thumbPath))
