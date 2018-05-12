@@ -109,6 +109,7 @@ func (gc *GC) doGCExpired(tx *bolt.Tx) {
 			if err != nil || image == nil {
 				fmt.Printf("Error loading image for GC. Deleting entry [UUID:%s]\n", string(uuid))
 				c.Delete()
+
 			} else {
 				fmt.Printf("GC Expired image [UUID:%s]\n", string(uuid))
 				c.Delete()

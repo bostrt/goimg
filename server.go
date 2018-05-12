@@ -182,10 +182,18 @@ func (s *Server) GetImage(w http.ResponseWriter, r *http.Request, params httprou
 		s.NotFound(w, nil, nil)
 		return
 	}
-	if thumbnail != "" {
+
+	// Check file is present before trying to serve. If it does not, ServeFile will
+	// do some redirects trying to help.
+	orig, thumb := s.fs.Ensure(image)
+
+	if thumbnail != "" && thumb {
 		http.ServeFile(w, r, image.thumbPath)
-	} else {
+	} else if orig {
 		http.ServeFile(w, r, image.path)
+	} else {
+		// Something is wrong here.
+		s.NotFound(w, nil, nil)
 	}
 }
 

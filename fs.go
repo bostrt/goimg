@@ -101,3 +101,17 @@ func (fs *FS) DeleteThumbnail(image *Image) {
 		//fmt.Printf("Error deleting thumbnail [%s]: %s\n", image.thumbPath, err)
 	}
 }
+
+// Ensure returns two booleans. First is true if original image is
+// present on disk. Second boolean is true if thumbnail is present
+// on disk.
+func (fs *FS) Ensure(image *Image) (bool, bool) {
+	orig, thumb := true, true
+	if _, err := os.Stat(image.path); os.IsNotExist(err) {
+		orig = false
+	}
+	if _, err := os.Stat(image.thumbPath); os.IsNotExist(err) {
+		thumb = false
+	}
+	return orig, thumb
+}
