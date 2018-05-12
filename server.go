@@ -264,7 +264,7 @@ func (s *Server) initRoutes() {
 func (s *Server) ListenAndServe() {
 	log.Fatal(
 		http.ListenAndServe(
-			":8080",
+			cfg.bind,
 			s.logger.Handler(
 				cookies(s.router),
 			),
