@@ -29,6 +29,9 @@ func NewImage(owner string, UUID string, path string, thumbPath string, unlisted
 		break
 	case "forever":
 		eternity = true
+		break
+	default:
+		now = now.AddDate(0, 1, 0) // month
 	}
 	image := &Image{
 		Owner:     owner,
