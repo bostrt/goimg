@@ -20,7 +20,7 @@ func main() {
 
 	// The sole command
 	var rootCmd = &cobra.Command{
-		Use:   "gopasteboard",
+		Use:   "pasteboard",
 		Short: "",
 		Long:  "",
 		Run: func(cmd *cobra.Command, args []string) {
