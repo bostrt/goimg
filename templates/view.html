@@ -8,12 +8,12 @@
                 <img class="img-responsive m-1 bg-gray p-1 rounded" src="/i/{{.UUID}}"/>
             </a>
             <div class="mt-2">
-                <span id="added" class="label"></span>
-                {{if .Image.Expires}}
-                    <span id="expires" class="label"></span>
-                {{end}}
                 {{if .Image.Owner }}
-                    <span class="chip">{{.Image.Owner}}</span>
+                    <span class="chip">Uploaded by {{.Image.Owner}}</span>
+                {{end}}
+                <span id="added" class="chip"></span>
+                {{if .Image.Expires}}
+                    <span id="expires" class="chip"></span>
                 {{end}}
                 {{if .Owned }}
                     <button id="modal-delete-button" class="btn btn-error float-right">Delete</button>
