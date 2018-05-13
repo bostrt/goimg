@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	maxUploadSize    int64  = 10 * 1024 * 1024 // 2 mb
-	PasteboardCookie string = "pasteboard"
+	maxUploadSize int64  = 10 * 1024 * 1024 // 2 mb
+	AppCookie     string = "goimg"
 )
 
 type Page struct {
@@ -57,7 +57,7 @@ func NewServer(imageDao *ImageDao, fs *FS, config Config) *Server {
 
 		// Logger
 		logger: logger.New(logger.Options{
-			Prefix:               "pasteboard",
+			Prefix:               "goimg",
 			RemoteAddressHeaders: []string{"X-Forwarded-For"},
 			OutputFlags:          log.LstdFlags,
 		}),
@@ -124,7 +124,7 @@ func (s *Server) NotFound(w http.ResponseWriter, _ *http.Request, _ httprouter.P
 func (s *Server) Upload(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	id, _ := shortid.Generate()
 	deleteKey, _ := shortid.Generate()
-	cookie := r.Context().Value(PasteboardCookie).(string)
+	cookie := r.Context().Value(AppCookie).(string)
 
 	// validate file size
 	r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
@@ -158,7 +158,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 
 func (s *Server) ViewImage(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	UUID := params.ByName("UUID")
-	cookie := r.Context().Value(PasteboardCookie).(string)
+	cookie := r.Context().Value(AppCookie).(string)
 	image, err := s.imageDao.Load(UUID)
 	if err != nil || image == nil {
 		s.NotFound(w, nil, nil)
@@ -275,11 +275,11 @@ func (s *Server) ListenAndServe() {
 func cookies(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var cookie *http.Cookie
-		cookie, err := r.Cookie(PasteboardCookie)
+		cookie, err := r.Cookie(AppCookie)
 		if err != nil {
 			// Set cookie
 			val, _ := shortid.Generate()
-			cookie = &http.Cookie{Name: PasteboardCookie, Value: val}
+			cookie = &http.Cookie{Name: AppCookie, Value: val}
 			http.SetCookie(w, cookie)
 		}
 		// Store value in requst context for later
