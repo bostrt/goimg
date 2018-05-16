@@ -243,11 +243,6 @@ func (s *Server) initRoutes() {
 		rice.MustFindBox("static/css").HTTPBox(),
 	)
 
-	s.router.ServeFiles(
-		"/js/*filepath",
-		rice.MustFindBox("static/js").HTTPBox(),
-	)
-
 	s.router.GET("/", s.Index)
 	// UI
 	s.router.POST("/upload", s.Upload)
