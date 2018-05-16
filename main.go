@@ -32,7 +32,7 @@ func main() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file")
 	rootCmd.PersistentFlags().StringVarP(&cfg.bind, "bind", "b", "0.0.0.0:8000", "[int]:<port> to bind to")
-	rootCmd.PersistentFlags().StringVarP(&cfg.data, "data", "", "./tmp", "path to data directory")
+	rootCmd.PersistentFlags().StringVarP(&cfg.data, "data", "", "./data", "path to data directory")
 	rootCmd.PersistentFlags().StringVarP(&cfg.db, "db", "", "./test.db", "path to database")
 	rootCmd.PersistentFlags().IntVarP(&cfg.gcInterval, "gc-interval", "", 300, "Garbage collection interval in seconds")
 	rootCmd.PersistentFlags().IntVarP(&cfg.gcLimit, "gc-limit", "", 100, "Garbage collection limit per run")
