@@ -2,9 +2,9 @@
 
 An image paste app written in Go.
 
-# Getting Started
+## Getting Started
 
-## Most Basic Usage
+### Most Basic Usage
 
 ```shell
 # go get github.com/bostrt/goimg/...
@@ -12,7 +12,7 @@ An image paste app written in Go.
 # goimg --data /tmp/data --db /tmp/data/test.db
 ```
 
-## Using Docker
+### Using Docker
 
 ```shell
 # docker run bostrt/goimg:dev
@@ -20,13 +20,13 @@ An image paste app written in Go.
 
 *Still working on a v1.0.0 for `latest` tag. Only `dev` tag available for now.*
 
-## OpenShift 3.x
+### OpenShift 3.x
 
 *TODO*
 
-# Settings
+## Settings
 
-## Command Line Options
+### Command Line Options
 
 ```shell
 # goimg -h
@@ -43,7 +43,7 @@ Flags:
   -h, --help              help for goimg
 ```
 
-## Environment Variables
+### Environment Variables
 
 Environment variables are an alternative to the command line options. Pass the same values to environment variables that you would to command line options.
 
@@ -54,7 +54,7 @@ Environment variables are an alternative to the command line options. Pass the s
 - `GOIMG_GCLIMIT`
 - `GOIMG_CONFIG`
 
-### Example
+#### Example
 
 ```shell
 # export GOIMG_BIND=0.0.0.0:1234
@@ -62,9 +62,9 @@ Environment variables are an alternative to the command line options. Pass the s
 Starting on 0.0.0.0:1234
 ```
 
-# Development
+## Development
 
-## Build Source and Run
+### Build Source and Run
 
 ```shell
 # git clone https://github.com/bostrt/goimg
@@ -74,7 +74,7 @@ Starting on 0.0.0.0:1234
 # ./goimg
 ```
 
-## Docker Build and Run
+### Docker Build and Run
 
 ```shell
 # git clone https://github.com/bostrt/goimg
