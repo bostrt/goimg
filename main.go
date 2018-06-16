@@ -34,13 +34,13 @@ func main() {
 	rootCmd.PersistentFlags().StringVarP(&cfg.bind, "bind", "b", "0.0.0.0:8000", "[int]:<port> to bind to")
 	rootCmd.PersistentFlags().StringVarP(&cfg.data, "data", "", "./data", "path to data directory")
 	rootCmd.PersistentFlags().StringVarP(&cfg.db, "db", "", "./test.db", "path to database")
-	rootCmd.PersistentFlags().IntVarP(&cfg.gcInterval, "gc-interval", "", 300, "Garbage collection interval in seconds")
-	rootCmd.PersistentFlags().IntVarP(&cfg.gcLimit, "gc-limit", "", 100, "Garbage collection limit per run")
+	rootCmd.PersistentFlags().IntVarP(&cfg.gcInterval, "gcinterval", "", 300, "garbage collection interval in seconds")
+	rootCmd.PersistentFlags().IntVarP(&cfg.gcLimit, "gclimit", "", 100, "garbage collection limit per run")
 	viper.BindPFlag("bind", rootCmd.PersistentFlags().Lookup("bind"))
 	viper.BindPFlag("data", rootCmd.PersistentFlags().Lookup("data"))
 	viper.BindPFlag("db", rootCmd.PersistentFlags().Lookup("db"))
-	viper.BindPFlag("gc-interval", rootCmd.PersistentFlags().Lookup("gc-interval"))
-	viper.BindPFlag("gc-limit", rootCmd.PersistentFlags().Lookup("gc-limit"))
+	viper.BindPFlag("gcinterval", rootCmd.PersistentFlags().Lookup("gcinterval"))
+	viper.BindPFlag("gclimit", rootCmd.PersistentFlags().Lookup("gclimit"))
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -92,8 +92,8 @@ func run() {
 }
 
 func initConfig() {
-	// Read in environment variables with prefix PB_
-	viper.SetEnvPrefix("PB")
+	// Read in environment variables with prefix GOIMG_
+	viper.SetEnvPrefix("GOIMG")
 	viper.AutomaticEnv()
 
 	if cfgFile != "" {
@@ -109,6 +109,6 @@ func initConfig() {
 	cfg.bind = viper.GetString("bind")
 	cfg.data = viper.GetString("data")
 	cfg.db = viper.GetString("db")
-	cfg.gcInterval = viper.GetInt("gc-interval")
-	cfg.gcLimit = viper.GetInt("gc-limit")
+	cfg.gcInterval = viper.GetInt("gcinterval")
+	cfg.gcLimit = viper.GetInt("gclimit")
 }
