@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 
 	"github.com/boltdb/bolt"
+	"github.com/unrolled/logger"
 )
 
 const (
@@ -16,12 +16,14 @@ const (
 )
 
 type ImageDao struct {
-	db *bolt.DB
+	db     *bolt.DB
+	logger *logger.Logger
 }
 
-func NewImageDao(db *bolt.DB) *ImageDao {
+func NewImageDao(db *bolt.DB, logger *logger.Logger) *ImageDao {
 	return &ImageDao{
-		db: db,
+		db:     db,
+		logger: logger,
 	}
 }
 
@@ -91,7 +93,8 @@ func (dao *ImageDao) DeleteWithTx(image *Image, tx *bolt.Tx) error {
 	c := imageBucket.Cursor()
 	k, _ := c.Seek(B(image.UUID))
 	if k == nil {
-		return fmt.Errorf("Error locating image: %s", image.UUID)
+		dao.logger.Printf("Error locating image: %s\n", image.UUID)
+		return nil
 	}
 
 	for ; k != nil && bytes.HasPrefix(k, B(image.UUID)); k, _ = c.Next() {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -9,6 +10,7 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/unrolled/logger"
 )
 
 var (
@@ -73,9 +75,15 @@ func run() {
 	db, _ := bolt.Open(cfg.db, 0600, nil)
 	defer db.Close()
 
-	dao := NewImageDao(db)
-	fs := NewFS(cfg)
-	gc := NewGC(db, dao, fs, &wg)
+	logger := logger.New(logger.Options{
+		RemoteAddressHeaders: []string{"X-Forwarded-For"},
+		OutputFlags:          log.LstdFlags,
+		IgnoredRequestURIs:   []string{"/favicon.ico"},
+	})
+	dao := NewImageDao(db, logger)
+	fs := NewFS(cfg, logger)
+	gc := NewGC(db, dao, fs, &wg, logger)
+
 	go gc.Start()
 
 	db.Update(func(tx *bolt.Tx) error {
@@ -87,7 +95,8 @@ func run() {
 		return nil
 	})
 
-	NewServer(dao, fs, cfg).ListenAndServe()
+	NewServer(dao, fs, cfg, logger).ListenAndServe()
+
 	wg.Wait()
 }
 

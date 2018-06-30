@@ -47,7 +47,7 @@ type Server struct {
 }
 
 // NewServer ...
-func NewServer(imageDao *ImageDao, fs *FS, config Config) *Server {
+func NewServer(imageDao *ImageDao, fs *FS, config Config, logger *logger.Logger) *Server {
 	server := &Server{
 		config:    config,
 		router:    httprouter.New(),
@@ -56,11 +56,7 @@ func NewServer(imageDao *ImageDao, fs *FS, config Config) *Server {
 		fs:        fs,
 
 		// Logger
-		logger: logger.New(logger.Options{
-			Prefix:               "goimg",
-			RemoteAddressHeaders: []string{"X-Forwarded-For"},
-			OutputFlags:          log.LstdFlags,
-		}),
+		logger: logger,
 
 		// Stats/Metrics
 		// counters: NewCounters(),
@@ -129,20 +125,25 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 	// validate file size
 	r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
 	if err := r.ParseMultipartForm(maxUploadSize); err != nil {
-		fmt.Println(err)
+		s.logger.Println(err)
 		return
 	}
 
 	// parse and validate file and post parameters
 	file, _, err := r.FormFile("file")
 	if err != nil {
-		fmt.Println(err)
+		s.logger.Println(err)
 		return
 	}
 	defer file.Close()
 
 	// Save to disk
 	newPath, thumbPath := s.fs.Save(file, id)
+
+	if newPath == "" && thumbPath == "" {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
 
 	image := NewImage(r.FormValue("owner"), id, newPath, thumbPath, r.FormValue("private") != "", r.FormValue("expire"), deleteKey, cookie)
 
@@ -212,7 +213,7 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, params http
 	}
 	err = s.imageDao.Delete(image)
 	if err != nil {
-		fmt.Println(err)
+		s.logger.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

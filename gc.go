@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/boltdb/bolt"
+	"github.com/unrolled/logger"
 )
 
 const (
@@ -19,31 +19,32 @@ var (
 )
 
 type GC struct {
-	db  *bolt.DB
-	dao *ImageDao
-	fs  *FS
-	wg  *sync.WaitGroup
-	cfg *Config
+	db     *bolt.DB
+	dao    *ImageDao
+	fs     *FS
+	wg     *sync.WaitGroup
+	cfg    *Config
+	logger *logger.Logger
 }
 
-func NewGC(db *bolt.DB, dao *ImageDao, fs *FS, wg *sync.WaitGroup) *GC {
+func NewGC(db *bolt.DB, dao *ImageDao, fs *FS, wg *sync.WaitGroup, logger *logger.Logger) *GC {
 	return &GC{
-		db:  db,
-		dao: dao,
-		fs:  fs,
-		wg:  wg,
+		db:     db,
+		dao:    dao,
+		fs:     fs,
+		wg:     wg,
+		logger: logger,
 	}
 }
 
 func (gc *GC) Start() {
 	//https://golang.org/pkg/time/#Ticker
 	gc.wg.Add(1)
-	fmt.Println("GC Started")
+	gc.logger.Println("GC Started")
 	ticker := time.NewTicker(time.Duration(cfg.gcInterval) * time.Second)
 	for {
 		select {
 		case <-ticker.C:
-			fmt.Println("Tick tick")
 			gc.do()
 			break
 		case msg := <-cmd:
@@ -51,7 +52,7 @@ func (gc *GC) Start() {
 				gc.do()
 			} else if msg == STOP {
 				gc.wg.Done()
-				fmt.Println("GC Shut down")
+				gc.logger.Println("GC Shut down")
 				return
 			}
 			break
@@ -60,7 +61,6 @@ func (gc *GC) Start() {
 }
 
 func (gc *GC) do() {
-	fmt.Println("GC do")
 	gc.db.Update(func(tx *bolt.Tx) error {
 		gc.doGCRecent(tx)
 		gc.doGCExpired(tx)
@@ -91,7 +91,7 @@ func (gc *GC) doGCRecent(tx *bolt.Tx) {
 			// Delete thumbnail used with the "recent" view
 			gc.fs.DeleteThumbnail(image)
 		} else {
-			fmt.Println("Error during GC", err)
+			gc.logger.Println("Error during GC", err)
 		}
 	}
 }
@@ -107,16 +107,16 @@ func (gc *GC) doGCExpired(tx *bolt.Tx) {
 		for _, uuid := range uuids {
 			image, err := gc.dao.Load(string(uuid))
 			if err != nil || image == nil {
-				fmt.Printf("Error loading image for GC. Deleting entry [UUID:%s]\n", string(uuid))
+				gc.logger.Printf("Error loading image for GC. Deleting entry [UUID:%s]\n", string(uuid))
 				c.Delete()
 
 			} else {
-				fmt.Printf("GC Expired image [UUID:%s]\n", string(uuid))
+				gc.logger.Printf("GC Expired image [UUID:%s]\n", string(uuid))
 				c.Delete()
 				gc.dao.DeleteWithTx(image, tx)
 				err := gc.fs.Delete(image)
 				if err != nil {
-					fmt.Printf("Error deleting image from disk for GC: %s\n", err)
+					gc.logger.Printf("Error deleting image from disk for GC: %s\n", err)
 				}
 			}
 		}
