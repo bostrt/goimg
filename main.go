@@ -72,7 +72,11 @@ func run() {
 	}
 
 	fmt.Println("Opening database:", cfg.db)
-	db, _ := bolt.Open(cfg.db, 0600, nil)
+	db, err := bolt.Open(cfg.db, 0600, nil)
+        if err != nil {
+            fmt.Println("Error opening database", err)
+            return
+        }
 	defer db.Close()
 
 	logger := logger.New(logger.Options{
